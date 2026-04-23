@@ -1,0 +1,41 @@
+pipeline{
+    agent any;
+    
+    stages{
+        stage("Clone code"){
+            steps{
+                git url:"https://github.com/tushar8400/online_shop.git", branch:'Hackathon'
+            }
+        }
+        stage("Build") {
+            steps {
+                sh "docker build -t online_shop ."
+            }
+        }
+        stage("Test"){
+            steps {
+                echo "test bhi hogya hai"
+            }
+        }
+        stage("Push To DockerHub"){
+            steps{
+                  withCredentials([usernamePassword(
+                      credentialsId:"dockerHubCreds",
+                      passwordVariable:"dockerHubPass",
+                      usernameVariable: "dockerHubUser"
+                )]) {
+                    sh "docker login -u ${env.dockerHubUser}  -p ${env.dockerHubPass}"
+                    
+                    sh "docker image tag online_shop  ${env.dockerHubUser}/online_shop"
+                    
+                    sh "docker push ${env.dockerHubUser}/online_shop "
+                }
+            }
+        }
+        stage("Deploy"){
+            steps{
+                sh "docker compose up -d"
+            }
+        }
+    }
+}
