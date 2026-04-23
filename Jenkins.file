@@ -37,5 +37,14 @@ pipeline{
                 sh "docker compose up -d "
             }
         }
+        post{
+             success {
+                    emailtext from: "tusharvalmiki0204@gmail.com", 
+                    to: "ramkailash1501@gmail.com",
+                    body: "build success",
+                    subject: "build success"
+             }
+         
+        }
     }
 }
